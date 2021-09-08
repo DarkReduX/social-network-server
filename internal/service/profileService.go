@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/DarkReduX/social-network-server/internal/models"
 	"github.com/DarkReduX/social-network-server/internal/repository"
-	"github.com/DarkReduX/social-network-server/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -37,22 +36,15 @@ func (s ProfileService) Create(ctx context.Context, profile models.Profile) erro
 	return s.repository.Create(ctx, profile)
 }
 
-func (s ProfileService) Update(ctx context.Context, id string, updateFields map[string]interface{}) error {
-	if err := utils.ValidateUpdateRequestWithRules(updateFields); err != nil {
+func (s ProfileService) Update(ctx context.Context, profile models.Profile) error {
+	// hash password
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%s", profile.Password)), bcrypt.DefaultCost)
+	if err != nil {
 		return err
 	}
+	profile.Password = string(passwordHash)
 
-	// hash password if exist
-	if v, ok := updateFields["password"]; ok {
-		passwordHash, err := bcrypt.GenerateFromPassword([]byte(fmt.Sprintf("%s", v)), bcrypt.DefaultCost)
-		if err != nil {
-			return err
-		}
-		updateFields["password"] = passwordHash
-	}
-
-	query, args := utils.BuildProfileUpdateQuery(updateFields, id)
-	return s.repository.Update(ctx, query, args)
+	return s.repository.Update(ctx, profile)
 }
 
 func (s ProfileService) Delete(ctx context.Context, id string) error {
