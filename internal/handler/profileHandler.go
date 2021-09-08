@@ -59,15 +59,15 @@ func (h ProfileHandler) Update(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	requestBody := make(map[string]interface{})
-	if err := c.Bind(&requestBody); err != nil {
+	profile := models.Profile{}
+	if err := c.Bind(&profile); err != nil {
 		log.WithFields(log.Fields{
 			"handler": "profile",
 			"func":    "Update",
 		}).Errorf("Unable bind request body: %v", err)
 	}
 
-	if err := h.service.Update(c.Request().Context(), id, requestBody); err != nil {
+	if err := h.service.Update(c.Request().Context(), profile); err != nil {
 		log.WithFields(log.Fields{
 			"handler": "profile",
 			"func":    "Update",
