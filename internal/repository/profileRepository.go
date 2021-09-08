@@ -26,8 +26,8 @@ func (r ProfileRepository) Get(ctx context.Context, id string) (*models.Profile,
 }
 
 func (r ProfileRepository) Create(ctx context.Context, profile models.Profile) error {
-	query := `select * from create_profile($1,$2,$3,$4,$5,$6,$7,$8)`
-	_, err := r.db.ExecContext(ctx, query, profile.Username, profile.Password, profile.AvatarLink, profile.LastActivity, profile.CreatedAt, profile.CreatedFromIp, profile.DeletedAt, profile.IsActivate)
+	query := `select * from create_profile($1,$2,$3,$4,$5,$6)`
+	_, err := r.db.ExecContext(ctx, query, profile.Username, profile.Password, profile.AvatarLink, profile.LastActivity, profile.CreatedAt, profile.CreatedFromIp)
 	return err
 }
 
