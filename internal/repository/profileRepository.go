@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/DarkReduX/social-network-server/internal/models"
-	"time"
 )
 
 type ProfileRepository struct {
@@ -18,7 +17,8 @@ func NewProfileRepository(db *sql.DB) *ProfileRepository {
 
 func (r ProfileRepository) Get(ctx context.Context, id string) (*models.Profile, error) {
 	profile := models.Profile{}
-	err := r.db.QueryRowContext(ctx, `select * from profile where username = $1`, id).Scan(&profile.Username, &profile.Password, &profile.AvatarLink, &profile.LastActivity, &profile.CreatedAt, &profile.CreatedFromIp, &profile.DeletedAt, &profile.IsActivate)
+	query := `select * from get_profile($1)`
+	err := r.db.QueryRowContext(ctx, query, id).Scan(&profile.Username, &profile.Password, &profile.AvatarLink, &profile.LastActivity, &profile.CreatedAt, &profile.CreatedFromIp, &profile.DeletedAt, &profile.IsActivate)
 	if err != nil {
 		return nil, err
 	}
@@ -26,12 +26,14 @@ func (r ProfileRepository) Get(ctx context.Context, id string) (*models.Profile,
 }
 
 func (r ProfileRepository) Create(ctx context.Context, profile models.Profile) error {
-	_, err := r.db.ExecContext(ctx, `insert into profile values ($1,$2,$3,$4,$5,$6,$7,$8)`, profile.Username, profile.Password, profile.AvatarLink, profile.LastActivity, profile.CreatedAt, profile.CreatedFromIp, profile.DeletedAt, profile.IsActivate)
+	query := `select * from create_profile($1,$2,$3,$4,$5,$6,$7,$8)`
+	_, err := r.db.ExecContext(ctx, query, profile.Username, profile.Password, profile.AvatarLink, profile.LastActivity, profile.CreatedAt, profile.CreatedFromIp, profile.DeletedAt, profile.IsActivate)
 	return err
 }
 
-func (r ProfileRepository) Update(ctx context.Context, query string, args []interface{}) error {
-	res, err := r.db.ExecContext(ctx, query, args...)
+func (r ProfileRepository) Update(ctx context.Context, profile models.Profile) error {
+	query := `select * from update_profile($1,$2,$3,$4,$5,$6,$7,$8)`
+	res, err := r.db.ExecContext(ctx, query, profile.Username, profile.Password, profile.AvatarLink, profile.LastActivity, profile.CreatedAt, profile.CreatedFromIp, profile.DeletedAt, profile.IsActivate)
 	if err != nil {
 		return err
 	}
@@ -45,7 +47,8 @@ func (r ProfileRepository) Update(ctx context.Context, query string, args []inte
 }
 
 func (r ProfileRepository) Delete(ctx context.Context, id string) error {
-	res, err := r.db.ExecContext(ctx, `update profile set deleted_at = $1 where username = $2`, time.Now(), id)
+	query := `select * from delete_profile($1)`
+	res, err := r.db.ExecContext(ctx, query, id)
 	if err != nil {
 		return err
 	}
