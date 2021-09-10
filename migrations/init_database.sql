@@ -1,4 +1,4 @@
-create table profile
+CREATE TABLE profile
 (
     username varchar(32),
     password varchar(256),
@@ -12,47 +12,36 @@ create table profile
     PRIMARY KEY (username)
 );
 
-create table post
+CREATE TABLE post
 (
     id      varchar(256),
     profile_id varchar(256),
     content text,
-    foreign key (profile_id) references profile (username)
+    FOREIGN KEY (profile_id) REFERENCES profile (username)
 );
 
-create table chat_room
+CREATE TABLE chat_room
 (
     id varchar(256),
-    primary key (id)
+    PRIMARY KEY (id)
 );
 
-create table message
+CREATE TABLE message
 (
     id      varchar(256),
     user_id varchar(256),
     chat_id varchar(256),
     content text,
-    primary key (id),
-    foreign key (chat_id) references chat_room (id),
-    foreign key (user_id) references profile (username)
+    PRIMARY KEY (id),
+    FOREIGN KEY (chat_id) REFERENCES chat_room (id),
+    FOREIGN KEY (user_id) REFERENCES profile (username)
 );
 
-create table chat_user
+CREATE TABLE chat_user
 (
-    chat_id varchar(256) references chat_room (id),
-    user_id varchar(256) references profile (username),
+    chat_id varchar(256) REFERENCES chat_room (id),
+    user_id varchar(256) REFERENCES profile (username),
     PRIMARY KEY (chat_id, user_id)
 );
 
-
---
--- truncate table post, profile, message, chat_user;
---
--- drop table message;
--- drop table chat_user;
--- drop table chat_room;
--- drop table post;
---
---drop function get_profile(varchar)
---drop table profile;
 

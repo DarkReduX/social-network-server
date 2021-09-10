@@ -1,7 +1,12 @@
-CREATE or replace function create_profile(varchar(32), varchar(256), varchar(256), timestamp, timestamp, varchar(128)) returns void as
+CREATE OR REPLACE FUNCTION create_profile(in_username profile.username%TYPE, in_password profile.password%TYPE,
+                                          in_avatar_link profile.avatar_link%TYPE,
+                                          in_last_activity profile.last_activity%TYPE,
+                                          in_created_at profile.created_at%TYPE,
+                                          in_created_from_ip profile.created_from_ip%TYPE)
+    RETURNS VOID AS
 $$
-begin
-    insert into profile (username,
+BEGIN
+    INSERT INTO profile (username,
                          password,
                          avatar_link,
                          last_activity,
@@ -9,38 +14,41 @@ begin
                          created_from_ip,
                          deleted_at,
                          is_active)
-    values ($1, $2, $3, $4, $5, $6, null, true);
-end
-$$ language 'plpgsql';
+    VALUES (in_username, in_password, in_avatar_link, in_last_activity, in_created_at, in_created_from_ip, null, true);
+END
+$$ LANGUAGE 'plpgsql';
 
-CREATE or replace function get_profile(varchar(32)) returns setof profile as
+CREATE OR REPLACE FUNCTION get_profile(in_username profile.username%TYPE) RETURNS SETOF profile AS
 $$
-begin
-    return query select * from profile where username = $1;
-end
+BEGIN
+    RETURN QUERY SELECT * FROM profile WHERE username = in_username;
+END
 $$
-    language 'plpgsql';
+    LANGUAGE 'plpgsql';
 
-CREATE or replace function update_profile(varchar(32), varchar(256), varchar(256), timestamp,
-                                          timestamp, bool) returns void as
+CREATE OR REPLACE FUNCTION update_profile(in_username profile.username%TYPE, in_password profile.password%TYPE,
+                                          in_avatar_link profile.avatar_link%TYPE,
+                                          in_last_activity profile.last_activity%TYPE,
+                                          in_deleted_at profile.deleted_at%TYPE,
+                                          in_is_active profile.is_active%TYPE) RETURNS VOID AS
 $$
-begin
-    update profile
-    set password        = $2,
-        avatar_link     = $3,
-        last_activity   = $4,
-        deleted_at      = $5,
-        is_active       = $6
-    where username = $1;
-end
-$$ language 'plpgsql';
+BEGIN
+    UPDATE profile
+    SET password      = in_password,
+        avatar_link   = in_avatar_link,
+        last_activity = in_last_activity,
+        deleted_at    = in_deleted_at,
+        is_active     = in_is_active
+    WHERE username = in_username;
+END
+$$ LANGUAGE 'plpgsql';
 
-CREATE or replace function delete_profile(varchar(32)) returns void as
+CREATE OR REPLACE FUNCTION delete_profile(in_username profile.username%TYPE) RETURNS VOID AS
 $$
-begin
-    update profile set is_active = false, deleted_at = now() where username = $1;
-end
-$$ language 'plpgsql';
+BEGIN
+    UPDATE profile SET is_active = false, deleted_at = now() WHERE username = in_username;
+END
+$$ LANGUAGE 'plpgsql';
 
 
 
