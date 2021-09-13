@@ -30,7 +30,8 @@ func (s ProfileService) Create(ctx context.Context, profile models.Profile) erro
 	}
 
 	profile.Password = string(passwordHash)
-	profile.CreatedAt = time.Now()
+	profile.CreatedAt = &time.Time{}
+	*profile.CreatedAt = time.Now()
 	profile.LastActivity = profile.CreatedAt
 
 	return s.repository.Create(ctx, profile)
