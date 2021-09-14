@@ -14,13 +14,9 @@ func NewFriendService(friendRepository *repository.FriendRepository) *FriendServ
 }
 
 func (s *FriendService) AddFriendRequest(ctx context.Context, userId string, friendId string) error {
-	return s.friendRepository.Add(ctx, userId, friendId)
+	return s.friendRepository.AddFriendRequest(ctx, userId, friendId)
 }
 
-func (s *FriendService) DeleteFriend(ctx context.Context, userId string, friendId string) error {
-	return s.friendRepository.Delete(ctx, userId, friendId)
-}
-
-func (s *FriendService) SubmitFriendRequest(ctx context.Context, userId string, friendId string) error {
-	return s.friendRepository.SubmitFriend(ctx, userId, friendId)
+func (s *FriendService) ProcessFriendRequest(ctx context.Context, userId string, friendId string, requestType string) error {
+	return s.friendRepository.ProcessFriendRequest(ctx, userId, friendId, requestType)
 }
