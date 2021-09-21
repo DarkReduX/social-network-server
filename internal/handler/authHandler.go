@@ -59,7 +59,7 @@ func (h AuthHandler) Login(c echo.Context) error {
 // @Description Delete user token
 // @Accept  json
 // @Produce  json
-// @Param token header string true "user token"
+// @Security BearerToken
 // @Success 200
 // @Failure 400
 // @Router /auth [delete]

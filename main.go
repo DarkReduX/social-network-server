@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/DarkReduX/social-network-server/docs"
 	"github.com/DarkReduX/social-network-server/internal/config"
 	"github.com/DarkReduX/social-network-server/internal/handler"
 	"github.com/DarkReduX/social-network-server/internal/models"
@@ -16,6 +17,16 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// @title Social Network Server
+// @version 1.0
+// @description HTTP server for social network.
+
+// @host localhost:1323
+// @BasePath /
+
+// @securityDefinitions.apikey BearerToken
+// @in header
+// @name Authorization
 func main() {
 	log.SetLevel(log.DebugLevel)
 

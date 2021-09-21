@@ -21,7 +21,7 @@ func NewFriendHandler(friendService *service.FriendService) *FriendHandler {
 // @Accept  json
 // @Produce  json
 // @Param friend_id query string true "User to add in friend identifier"
-// @Param BearerToken header string true "User token"
+// @Security BearerToken
 // @Success 200
 // @Failure 400
 // @Router /friend [post]
@@ -40,9 +40,8 @@ func (h FriendHandler) AddFriendRequest(c echo.Context) error {
 // @Tags friend
 // @Accept  json
 // @Produce  json
-// @Param friend_id query string true "User which want to add you in friend list"
+// @Security BearerToken
 // @Param request_type query string true "DECLINE/ACCEPT"
-// @Param BearerToken header string true "User token"
 // @Success 200
 // @Failure 400
 // @Router /friend [put]

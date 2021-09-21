@@ -78,6 +78,7 @@ func (h ProfileHandler) Create(c echo.Context) error {
 // @Tags profile
 // @Accept  json
 // @Produce  json
+// @Security BearerToken
 // @Param id query int true "User id"
 // @Param profile body models.Profile true "User profile fields"
 // @Success 200
@@ -114,6 +115,7 @@ func (h ProfileHandler) Update(c echo.Context) error {
 // @Tags profile
 // @Accept  json
 // @Produce  json
+// @Security BearerToken
 // @Param id query int true "User profile ID"
 // @Success 200
 // @Failure 400
