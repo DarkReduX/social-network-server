@@ -14,6 +14,17 @@ func NewFriendHandler(friendService *service.FriendService) *FriendHandler {
 	return &FriendHandler{friendService: friendService}
 }
 
+// AddFriendRequest godoc
+// @Summary Send friend request to user with sent ID
+// @Description User to add in friend list Identifier
+// @Tags friend
+// @Accept  json
+// @Produce  json
+// @Param friend_id query string true "User to add in friend identifier"
+// @Param BearerToken header string true "User token"
+// @Success 200
+// @Failure 400
+// @Router /friend [post]
 func (h FriendHandler) AddFriendRequest(c echo.Context) error {
 	username := c.Get("username").(string)
 	friendName := c.QueryParam("friend_id")
@@ -24,6 +35,17 @@ func (h FriendHandler) AddFriendRequest(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+// ProcessFriendRequest godoc
+// @Summary Decline or Accept friend request from other user.
+// @Tags friend
+// @Accept  json
+// @Produce  json
+// @Param friend_id query string true "User which want to add you in friend list"
+// @Param request_type query string true "DECLINE/ACCEPT"
+// @Param BearerToken header string true "User token"
+// @Success 200
+// @Failure 400
+// @Router /friend [put]
 func (h FriendHandler) ProcessFriendRequest(c echo.Context) error {
 	username := c.Get("username").(string)
 	friendName := c.QueryParam("friend_id")

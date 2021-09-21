@@ -17,6 +17,16 @@ func NewProfileHandler(service *service.ProfileService) *ProfileHandler {
 	return &ProfileHandler{service: service}
 }
 
+// Get godoc
+// @Summary Get user profile
+// @Tags profile
+// @Accept  json
+// @Produce  json
+// @Param id query string true "User profile ID"
+// @Success 200 {object} models.Profile
+// @Failure 400
+// @Failure 500
+// @Router /profile [get]
 func (h ProfileHandler) Get(c echo.Context) error {
 	id := c.QueryParam("id")
 
@@ -36,6 +46,16 @@ func (h ProfileHandler) Get(c echo.Context) error {
 	return c.JSON(http.StatusOK, profile)
 }
 
+// Create godoc
+// @Summary Create user profile
+// @Tags profile
+// @Accept  json
+// @Produce  json
+// @Param profile body models.Profile true "User profile fields"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /profile [post]
 func (h ProfileHandler) Create(c echo.Context) error {
 	profile := models.Profile{}
 	if err := c.Bind(&profile); err != nil {
@@ -53,6 +73,16 @@ func (h ProfileHandler) Create(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+// Update godoc
+// @Summary Update user profile info
+// @Tags profile
+// @Accept  json
+// @Produce  json
+// @Param id query int true "User id"
+// @Param profile body models.Profile true "User profile fields"
+// @Success 200
+// @Failure 400
+// @Router /profile [put]
 func (h ProfileHandler) Update(c echo.Context) error {
 	id := c.QueryParam("id")
 	if id == "" {
@@ -79,6 +109,15 @@ func (h ProfileHandler) Update(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
+// Delete godoc
+// @Summary Set user profile as deleted
+// @Tags profile
+// @Accept  json
+// @Produce  json
+// @Param id query int true "User profile ID"
+// @Success 200
+// @Failure 400
+// @Router /profile [delete]
 func (h ProfileHandler) Delete(c echo.Context) error {
 	id := c.QueryParam("id")
 	if id == "" {

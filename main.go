@@ -9,6 +9,7 @@ import (
 	"github.com/DarkReduX/social-network-server/internal/repository"
 	"github.com/DarkReduX/social-network-server/internal/service"
 	"github.com/go-redis/redis/v8"
+	"github.com/labstack/echo-contrib/jaegertracing"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
@@ -70,5 +71,12 @@ func main() {
 
 	e = config.NewEchoWithRoutes(e, jwtConfig, profileHandler, authHandler, friendHandler, authRepository)
 
+	// enable jaeger middleware
+	c := jaegertracing.New(e, nil)
+	defer func() {
+		if jErr := c.Close(); jErr != nil {
+			log.Errorf("Error while closing tracer: %v", jErr)
+		}
+	}()
 	e.Logger.Fatal(e.Start(":1323"))
 }
