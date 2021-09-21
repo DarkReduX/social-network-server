@@ -1,0 +1,1 @@
+CREATE TYPE request_state AS ENUM ('DECLINED', 'IN_PROCESS', 'ACCEPTED')

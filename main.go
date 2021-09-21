@@ -15,12 +15,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	authPath    = "/auth"
-	profilePath = "/profile"
-	friendPath  = "/friend"
-)
-
 func main() {
 	log.SetLevel(log.DebugLevel)
 
@@ -74,20 +68,7 @@ func main() {
 
 	e := echo.New()
 
-	//auth routes
-	e.POST(authPath, authHandler.Login)
-	e.DELETE(authPath, authHandler.Logout, authService.AuthenticateTokenMiddleware(jwtConfig))
-
-	//profile routes
-	e.GET(profilePath, profileHandler.Get)
-	e.POST(profilePath, profileHandler.Create)
-	e.PUT(profilePath, profileHandler.Update, authService.AuthenticateTokenMiddleware(jwtConfig))
-	e.DELETE(profilePath, profileHandler.Delete, authService.AuthenticateTokenMiddleware(jwtConfig))
-
-	//friend routes
-	e.POST(friendPath, friendHandler.AddFriendRequest, authService.AuthenticateTokenMiddleware(jwtConfig))
-	e.DELETE(friendPath, friendHandler.DeleteFriend, authService.AuthenticateTokenMiddleware(jwtConfig))
-	e.PUT(friendPath, friendHandler.SubmitFriendRequest, authService.AuthenticateTokenMiddleware(jwtConfig))
+	e = config.NewEchoWithRoutes(e, jwtConfig, profileHandler, authHandler, friendHandler, authRepository)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }

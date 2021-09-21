@@ -24,20 +24,11 @@ func (h FriendHandler) AddFriendRequest(c echo.Context) error {
 	return c.NoContent(http.StatusOK)
 }
 
-func (h FriendHandler) DeleteFriend(c echo.Context) error {
+func (h FriendHandler) ProcessFriendRequest(c echo.Context) error {
 	username := c.Get("username").(string)
 	friendName := c.QueryParam("friend_id")
-	if err := h.friendService.DeleteFriend(c.Request().Context(), username, friendName); err != nil {
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	return c.NoContent(http.StatusOK)
-}
-
-func (h FriendHandler) SubmitFriendRequest(c echo.Context) error {
-	username := c.Get("username").(string)
-	friendName := c.QueryParam("friend_id")
-	if err := h.friendService.SubmitFriendRequest(c.Request().Context(), username, friendName); err != nil {
+	requestType := c.QueryParam("request_type")
+	if err := h.friendService.ProcessFriendRequest(c.Request().Context(), username, friendName, requestType); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
 
