@@ -44,6 +44,8 @@ func (h ProfileHandler) Get(c echo.Context) error {
 
 		return c.NoContent(http.StatusInternalServerError)
 	}
+
+	profile.Password = ""
 	return c.JSON(http.StatusOK, profile)
 }
 
