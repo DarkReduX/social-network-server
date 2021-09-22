@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/DarkReduX/social-network-server/internal/models"
 	"github.com/DarkReduX/social-network-server/internal/service"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -61,6 +62,7 @@ func (h ProfileHandler) Create(c echo.Context) error {
 	if err := c.Bind(&profile); err != nil {
 		return echo.ErrBadRequest
 	}
+	profile.UUID = uuid.New().String()
 
 	if err := h.service.Create(c.Request().Context(), profile); err != nil {
 		log.WithFields(log.Fields{
