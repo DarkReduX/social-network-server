@@ -2,12 +2,16 @@ package handler
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/DarkReduX/social-network-server/internal/models"
 	"github.com/DarkReduX/social-network-server/internal/service"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
+	"io"
 	"net/http"
+	"os"
+	"strings"
 )
 
 type ProfileHandler struct {
@@ -139,4 +143,86 @@ func (h ProfileHandler) Delete(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 	return c.NoContent(http.StatusOK)
+}
+
+// UploadUserAvatar godoc
+// @Summary Set user profile avatar
+// @Tags profile
+// @Accept  mpfd
+// @Produce  json
+// @Security BearerToken
+// @Param img-path path string true "Server img path"
+// @Param avatar formData file true "Upload image"
+// @Success 200
+// @Failure 400
+// @Router /profile/{img-path} [put]
+func (h ProfileHandler) UploadUserAvatar(c echo.Context) error {
+	username := c.Get("username").(string)
+	filePath := c.Param("img-path")
+	filePath = strings.ReplaceAll(filePath, "%2F", "/")
+
+	currentPrjPath, err := os.Getwd()
+	if err != nil {
+		log.Errorf("Couldn't get current project path: %v", err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	if !strings.Contains(filePath, currentPrjPath) {
+		return c.JSON(http.StatusBadRequest, "Incorrect path")
+	}
+
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		log.WithFields(log.Fields{
+			"handler": "profile",
+			"func":    "UploadUserAvatar",
+		}).Errorf("Couldn't get file form: %v", err)
+		return err
+	}
+
+	src, err := file.Open()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"handler": "profile",
+			"func":    "UploadUserAvatar",
+		}).Errorf("Couldn't open file: %v", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	fullPath := fmt.Sprintf("%s/%s", filePath, file.Filename)
+	dst, err := os.Create(fullPath)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"handler": "profile",
+			"func":    "UploadUserAvatar",
+		}).Errorf("Couldn't create file: %v", err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+	defer func() {
+		if err := dst.Close(); err != nil {
+			log.WithFields(log.Fields{
+				"handler": "profile",
+				"func":    "UploadUserAvatar",
+			}).Errorf("Couldn't close created file: %v", err)
+		}
+	}()
+
+	if _, err := io.Copy(dst, src); err != nil {
+		log.WithFields(log.Fields{
+			"handler": "profile",
+			"func":    "UploadUserAvatar",
+		}).Errorf("Couldn't copy sent file: %v", err)
+	}
+
+	userProfile, err := h.service.Get(c.Request().Context(), username)
+	userProfile.AvatarLink = &fullPath
+	if err != nil {
+		return err
+	}
+
+	if err := h.service.Update(c.Request().Context(), *userProfile); err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.JSON(http.StatusOK, fmt.Sprintf("Avatar %s uploaded successfully for user %s", file.Filename, username))
 }
