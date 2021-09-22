@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/DarkReduX/social-network-server/internal/handler"
 	localMiddleware "github.com/DarkReduX/social-network-server/internal/middleware"
 	"github.com/DarkReduX/social-network-server/internal/repository"
@@ -26,6 +27,7 @@ func NewEchoWithRoutes(e *echo.Echo, jwtConfig middleware.JWTConfig, profileHand
 	e.GET(profilePath, profileHandler.Get)
 	e.POST(profilePath, profileHandler.Create)
 	e.PUT(profilePath, profileHandler.Update, localMiddleware.AuthenticateToken(jwtConfig, tokenRepository))
+	e.PUT(fmt.Sprintf("%s/:img-path", profilePath), profileHandler.UploadUserAvatar, localMiddleware.AuthenticateToken(jwtConfig, tokenRepository))
 	e.DELETE(profilePath, profileHandler.Delete, localMiddleware.AuthenticateToken(jwtConfig, tokenRepository))
 
 	//friend routes

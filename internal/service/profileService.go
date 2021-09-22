@@ -17,8 +17,8 @@ func NewProfileService(repository *repository.ProfileRepository) *ProfileService
 	return &ProfileService{repository: repository}
 }
 
-func (s ProfileService) Get(ctx context.Context, id string) (*models.Profile, error) {
-	profile, err := s.repository.Get(ctx, id)
+func (s ProfileService) Get(ctx context.Context, username string) (*models.Profile, error) {
+	profile, err := s.repository.GetByName(ctx, username)
 	return profile, err
 }
 

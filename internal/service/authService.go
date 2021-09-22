@@ -23,7 +23,7 @@ func NewAuthService(profileRepository *repository.ProfileRepository, authReposit
 }
 
 func (s AuthService) Login(ctx context.Context, username string, password string) (*string, error) {
-	profile, err := s.profileRepository.Get(ctx, username)
+	profile, err := s.profileRepository.GetByName(ctx, username)
 	if err != nil {
 		return nil, err
 	}
