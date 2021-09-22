@@ -17,6 +17,16 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 	return &AuthHandler{authService: authService}
 }
 
+// Login godoc
+// @Summary Log in user in account
+// @Tags auth
+// @Description Returns user token
+// @Accept  json
+// @Produce  json
+// @Param profile body models.Profile true "Profile password and username"
+// @Success 200 {string} token
+// @Failure 400
+// @Router /auth [post]
 func (h AuthHandler) Login(c echo.Context) error {
 	profile := models.Profile{}
 	if err := c.Bind(&profile); err != nil {
@@ -43,6 +53,16 @@ func (h AuthHandler) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, token)
 }
 
+// Logout godoc
+// @Summary Logout user
+// @Tags auth
+// @Description Delete user token
+// @Accept  json
+// @Produce  json
+// @Security BearerToken
+// @Success 200
+// @Failure 400
+// @Router /auth [delete]
 func (h AuthHandler) Logout(c echo.Context) error {
 	username := c.Get("username").(string)
 	if err := h.authService.Logout(c.Request().Context(), username); err != nil {

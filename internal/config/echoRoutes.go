@@ -6,6 +6,7 @@ import (
 	"github.com/DarkReduX/social-network-server/internal/repository"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 const (
@@ -15,6 +16,8 @@ const (
 )
 
 func NewEchoWithRoutes(e *echo.Echo, jwtConfig middleware.JWTConfig, profileHandler *handler.ProfileHandler, authHandler *handler.AuthHandler, friendHandler *handler.FriendHandler, tokenRepository *repository.AuthRepository) *echo.Echo {
+	//swagger
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	//auth routes
 	e.POST(authPath, authHandler.Login)
 	e.DELETE(authPath, authHandler.Logout, localMiddleware.AuthenticateToken(jwtConfig, tokenRepository))

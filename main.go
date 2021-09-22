@@ -3,18 +3,30 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/DarkReduX/social-network-server/docs"
 	"github.com/DarkReduX/social-network-server/internal/config"
 	"github.com/DarkReduX/social-network-server/internal/handler"
 	"github.com/DarkReduX/social-network-server/internal/models"
 	"github.com/DarkReduX/social-network-server/internal/repository"
 	"github.com/DarkReduX/social-network-server/internal/service"
 	"github.com/go-redis/redis/v8"
+	"github.com/labstack/echo-contrib/jaegertracing"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 )
 
+// @title Social Network Server
+// @version 1.0
+// @description HTTP server for social network.
+
+// @host localhost:1323
+// @BasePath /
+
+// @securityDefinitions.apikey BearerToken
+// @in header
+// @name Authorization
 func main() {
 	log.SetLevel(log.DebugLevel)
 
@@ -70,5 +82,12 @@ func main() {
 
 	e = config.NewEchoWithRoutes(e, jwtConfig, profileHandler, authHandler, friendHandler, authRepository)
 
+	// enable jaeger middleware
+	c := jaegertracing.New(e, nil)
+	defer func() {
+		if jErr := c.Close(); jErr != nil {
+			log.Errorf("Error while closing tracer: %v", jErr)
+		}
+	}()
 	e.Logger.Fatal(e.Start(":1323"))
 }
